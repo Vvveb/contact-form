@@ -92,7 +92,7 @@ class Form extends \Vvveb\System\Component\ComponentBase {
 		return $message;
 	}
 
-	function request(&$results) {
+	function request(&$results, $index = 0) {
 		$request = Request::getInstance();
 
 		if (isset($request->post['contact-form'])) {

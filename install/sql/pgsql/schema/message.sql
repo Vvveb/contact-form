@@ -1,7 +1,11 @@
---DROP SEQUENCE IF EXISTS message_seq;
+-- DROP TABLE IF EXISTS message;
+
+-- DROP SEQUENCE IF EXISTS message_seq;
+-- CREATE SEQUENCE message_seq;
+
 CREATE SEQUENCE IF NOT EXISTS message_seq;
 
-
+-- CREATE TABLE message (
 CREATE TABLE IF NOT EXISTS message (
   "message_id" int check ("message_id" > 0) NOT NULL DEFAULT NEXTVAL ('message_seq'),
   "type" varchar(20) NOT NULL DEFAULT 'message',
@@ -13,4 +17,7 @@ CREATE TABLE IF NOT EXISTS message (
   PRIMARY KEY ("message_id")
 );
 
-CREATE INDEX "message_type_status_date" ON message ("type","created_at","message_id");
+
+-- DROP INDEX IF EXISTS "message_type_status_date";
+
+CREATE INDEX IF NOT EXISTS "message_type_status_date" ON message ("type","created_at","message_id");

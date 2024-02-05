@@ -1,4 +1,4 @@
--- Categories
+-- Messages
 
 	-- Get one message
 

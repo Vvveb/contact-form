@@ -24,13 +24,13 @@
 Name: Contact form
 Slug: contact-form
 Category: email
-Url: http://www.vvveb.com
+Url: https://www.vvveb.com
 Description: Create contact forms that sends email or saves data in the database
 Thumb: contact-form.svg
 Author: givanz
 Version: 0.1
-Author url: http://www.vvveb.com
-Settings: /admin/?module=plugins/contact-form/messages
+Author url: https://www.vvveb.com
+Settings: /admin/index.php?module=plugins/contact-form/messages
 */
 
 use function Vvveb\__;
@@ -60,7 +60,7 @@ class ContactFormPlugin {
 			// add menu entry under plugins submenu
 			$menu['plugins']['items']['contact-form'] = [
 				'name'     => __('Contact form'),
-				'url'      => $admin_path . '?module=plugins/contact-form/messages',
+				'url'      => $admin_path . 'index.php?module=plugins/contact-form/messages',
 				'icon-img' => PUBLIC_PATH . 'plugins/contact-form/contact-form.svg',
 				'module'   => 'plugins/contact-form/messages',
 				'action'   => 'index',
@@ -69,8 +69,8 @@ class ContactFormPlugin {
 			// add shortcut to messages page to top level menu
 			$menuEntry = [
 				'name'     => __('Messages'),
-				'url'      => $admin_path . '?module=plugins/contact-form/messages',
-				'icon'     => 'icon-mail-outline',
+				'url'      => $admin_path . 'index.php?module=plugins/contact-form/messages',
+				'icon'     => $unread ? 'icon-mail-unread-outline' : 'icon-mail-outline',
 				'module'   => 'plugins/contact-form/messages',
 				'action'   => 'index',
 			];
@@ -84,7 +84,7 @@ class ContactFormPlugin {
 			$menu = array_insert_array_after('users', $menu, ['messages' => $menuEntry]);
 
 			return [$menu];
-		}, 20);
+		});
 
 		// include plugin component when the page builder loads
 		Event::on('Vvveb\Controller\Editor\Editor', 'loadThemeAssets', __CLASS__, function ($inputs, $components, $blocks, $sections) {

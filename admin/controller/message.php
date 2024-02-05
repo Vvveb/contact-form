@@ -60,6 +60,8 @@ class Message extends Crud {
 					$messageSql->edit(['message' => ['status' => 1], 'message_id' => $message['message_id']]);
 				}
 			}
+		} else {
+			$this->notFound();
 		}
 	}
 }
