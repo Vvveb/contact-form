@@ -23,8 +23,10 @@
 namespace Vvveb\Plugins\ContactForm\Component;
 
 use function Vvveb\__;
+use function Vvveb\session;
 use function Vvveb\email;
 use function Vvveb\humanReadable;
+use function Vvveb\session;
 use function Vvveb\siteSettings;
 use Vvveb\Sql\Plugins\ContactForm\MessageSQL;
 use Vvveb\System\Core\Request;
@@ -132,8 +134,8 @@ class Form extends \Vvveb\System\Component\ComponentBase {
 				list($html, $txt) = $this->arrayToText($meta, $html, $txt);
 
 				if ($this->options['email'] == true) {
-					$site    = siteSettings();
-					$subject = $site['title'] . ' - ' . $formName . (isset($post['subject']) ? ' - ' . $post['subject'] : '');
+					$site    = siteSettings(SITE_ID, session('language_id') ?? 1);
+					$subject = ($site['description']['title'] ?? '') . ' - ' . $formName . (isset($post['subject']) ? ' - ' . $post['subject'] : '');
 					$to      = $this->options['sendto'] ?? $site['contact-email'] ?? false;
 
 					if ($to) {

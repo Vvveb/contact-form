@@ -22,7 +22,7 @@
 	)
 	BEGIN
 		-- allow only table fields and set defaults for missing values
-		@FILTER(:message, message);
+		@FILTER(:message, message)
 		
 		UPDATE message 
 			
@@ -40,7 +40,7 @@
 	BEGIN
 		
 		-- allow only table fields and set defaults for missing values
-		:message  = @FILTER(:message, message);
+		:message  = @FILTER(:message, message)
 
 		INSERT INTO message 
 		

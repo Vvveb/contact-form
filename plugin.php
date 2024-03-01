@@ -34,7 +34,7 @@ Settings: /admin/index.php?module=plugins/contact-form/messages
 */
 
 use function Vvveb\__;
-use function Vvveb\array_insert_array_after;
+use function Vvveb\arrayInsertArrayAfter;
 use function Vvveb\model;
 use Vvveb\Plugins\ContactForm\Install;
 use Vvveb\System\Core\View;
@@ -81,7 +81,7 @@ class ContactFormPlugin {
 				$menuEntry['badge-class'] = 'badge bg-success-subtle text-body mx-2';
 			}
 
-			$menu = array_insert_array_after('users', $menu, ['messages' => $menuEntry]);
+			$menu = arrayInsertArrayAfter('users', $menu, ['messages' => $menuEntry]);
 
 			return [$menu];
 		});
