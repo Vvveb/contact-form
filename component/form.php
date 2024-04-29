@@ -26,7 +26,6 @@ use function Vvveb\__;
 use function Vvveb\session;
 use function Vvveb\email;
 use function Vvveb\humanReadable;
-use function Vvveb\session;
 use function Vvveb\siteSettings;
 use Vvveb\Sql\Plugins\ContactForm\MessageSQL;
 use Vvveb\System\Core\Request;
