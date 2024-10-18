@@ -29,7 +29,7 @@ use function Vvveb\model;
 class Message extends Crud {
 	protected $type = 'message';
 
-	protected $model = 'Plugins\ContactForm\Message';
+	protected $modelName = 'Plugins\ContactForm\Message';
 
 	protected $module = 'plugins/contact-form';
 
@@ -56,7 +56,7 @@ class Message extends Crud {
 				$message['meta']    = $meta;
 
 				if ($message['status'] == 0) {
-					$messageSql = model($this->model);
+					$messageSql = model($this->modelName);
 					$messageSql->edit(['message' => ['status' => 1], 'message_id' => $message['message_id']]);
 				}
 			}

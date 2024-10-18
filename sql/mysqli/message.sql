@@ -73,7 +73,7 @@
 	BEGIN
 
 		SELECT * 
-			FROM message AS message 
+			FROM message 
 		ORDER BY message_id DESC
 			
 		LIMIT :limit OFFSET :start;

@@ -63,7 +63,7 @@ class Form extends \Vvveb\System\Component\ComponentBase {
 
 		foreach ($message as $name => $value) {
 			$name = humanReadable($name);
-			$html .= "<tr><td>$name</td><td>$value</td></tr>";
+			$html .= "<tr><th>$name</th><td>$value</td></tr>";
 			$txt .= "$name : $value\n";
 		}
 		$html .= '</table>';

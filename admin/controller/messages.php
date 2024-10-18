@@ -27,11 +27,11 @@ use Vvveb\Controller\Listing;
 class Messages extends Listing {
 	protected $type = 'message';
 
-	protected $model = 'Plugins\ContactForm\Message';
+	protected $modelName = 'Plugins\ContactForm\Message';
 
 	//protected $model = 'message';
 
-	protected $list = 'messages';
+	protected $list = 'message';
 
 	protected $listController = 'messages';
 
@@ -41,8 +41,8 @@ class Messages extends Listing {
 		parent::index();
 
 		//expand fields in the json
-		if ($this->view->messages) {
-			foreach ($this->view->messages as &$message) {
+		if ($this->view->message) {
+			foreach ($this->view->message as &$message) {
 				$data = json_decode($message['data'] ?? '{}', true);
 
 				if (is_array($data)) {
