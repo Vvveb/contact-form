@@ -18,25 +18,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
-*/
+ */
 
 namespace Vvveb\Plugins\ContactForm\Component;
 
 use function Vvveb\__;
-use function Vvveb\session as sess;
 use function Vvveb\email;
 use function Vvveb\humanReadable;
+use function Vvveb\session as sess;
 use function Vvveb\siteSettings;
 use Vvveb\Sql\Plugins\ContactForm\MessageSQL;
+use Vvveb\System\Component\ComponentBase;
 use Vvveb\System\Core\Request;
 use Vvveb\System\Core\View;
 use Vvveb\System\Event;
+use Vvveb\System\Traits\Spam;
 
 if (! defined('V_VERSION')) {
 	die('Invalid request!');
 }
 
-class Form extends \Vvveb\System\Component\ComponentBase {
+class Form extends ComponentBase {
+	use Spam;
+
 	public static $defaultOptions = [
 		'save'    	     => true,
 		'email'         => true,
@@ -44,19 +48,6 @@ class Form extends \Vvveb\System\Component\ComponentBase {
 		'confirm-email' => null,
 		'name'          => '', //unique form identifier
 	];
-
-	//these must be empty, they are hidden in html and only bots will fill them
-	//todo: add dynamic field name
-	protected $spamFields =  [
-		'firstname-empty',
-		'lastname-empty',
-		'subject-empty',
-		'contact-form',
-	];
-
-	function checkIfSpam(&$message) {
-		return $message;
-	}
 
 	function arrayToText($message, &$html, &$txt) {
 		$html .= '<table>';
@@ -69,28 +60,6 @@ class Form extends \Vvveb\System\Component\ComponentBase {
 		$html .= '</table>';
 
 		return [$html, $txt];
-	}
-
-	function isSpam(&$message) {
-		$spam = false;
-
-		foreach ($this->spamFields as $field) {
-			if (isset($message[$field]) && ! empty($message[$field])) {
-				return $spam = true;
-			}
-		}
-
-		return $spam;
-	}
-
-	function removeSpamCatchFields(&$message) {
-		foreach ($this->spamFields as $field) {
-			if (isset($message[$field])) {
-				unset($message[$field]);
-			}
-		}
-
-		return $message;
 	}
 
 	function request(&$results, $index = 0) {

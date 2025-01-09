@@ -44,6 +44,10 @@ class Message extends Crud {
 			if (is_array($data)) {
 				foreach ($data as $key => $value) {
 					unset($data[$key]);
+
+					if (in_array($key, ['csrf'])) {
+						continue;
+					}
 					$data[humanReadable($key)] = $value;
 				}
 
