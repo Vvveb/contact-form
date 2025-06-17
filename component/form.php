@@ -28,6 +28,7 @@ use function Vvveb\humanReadable;
 use function Vvveb\session as sess;
 use function Vvveb\siteSettings;
 use Vvveb\Sql\Plugins\ContactForm\MessageSQL;
+use Vvveb\System\CacheManager;
 use Vvveb\System\Component\ComponentBase;
 use Vvveb\System\Core\Request;
 use Vvveb\System\Core\View;
@@ -84,6 +85,7 @@ class Form extends ComponentBase {
 					$message    = new MessageSQL();
 
 					if ($message->add($msg)) {
+						CacheManager :: clearObjectCache('component', 'notifications');
 						$view->success[] = __('Message was sent!');
 					} else {
 						$view->errors[] = __('Error sending message!');

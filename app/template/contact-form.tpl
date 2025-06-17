@@ -6,9 +6,7 @@
 	 if (isset($_POST[$name])) {
 		$value = $_POST[$name]; 
 	 }
-	 else if (isset($_GET[$name])) {
-		$value = $_GET[$name]; 
-	 }
+	 
 	 echo htmlspecialchars($value);
 ?>
 
@@ -21,9 +19,7 @@
 	 if (isset($_POST[$name])) {
 		$value = $_POST[$name]; 
 	 }
-	 else if (isset($_GET[$name])) {
-		$value = $_GET[$name]; 
-	 }
+	 
 	 echo htmlspecialchars($value);
 ?>
 

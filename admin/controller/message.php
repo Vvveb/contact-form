@@ -22,9 +22,11 @@
 
 namespace Vvveb\Plugins\ContactForm\Controller;
 
+use function Vvveb\__;
 use Vvveb\Controller\Crud;
 use function Vvveb\humanReadable;
 use function Vvveb\model;
+use Vvveb\System\CacheManager;
 
 class Message extends Crud {
 	protected $type = 'message';
@@ -48,12 +50,12 @@ class Message extends Crud {
 					if (in_array($key, ['csrf'])) {
 						continue;
 					}
-					$data[humanReadable($key)] = $value;
+					$data[__(humanReadable($key))] = $value;
 				}
 
 				foreach ($meta as $key => $value) {
 					unset($meta[$key]);
-					$meta[humanReadable(strtolower($key))] = $value;
+					$meta[__(humanReadable(strtolower($key)))] = $value;
 				}
 
 				$message['message'] = $data;
@@ -62,6 +64,7 @@ class Message extends Crud {
 				if ($message['status'] == 0) {
 					$messageSql = model($this->modelName);
 					$messageSql->edit(['message' => ['status' => 1], 'message_id' => $message['message_id']]);
+					CacheManager :: clearObjectCache('component', 'notifications');
 				}
 			}
 		} else {

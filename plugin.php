@@ -50,13 +50,29 @@ class ContactFormPlugin {
 		// add admin menu item
 		$admin_path = \Vvveb\adminPath();
 
-		// add menu event
-		Event::on('Vvveb\Controller\Base', 'init-menu', __CLASS__, function ($menu) use ($admin_path) {
+		// add messages count to notifications
+		Event::on('Vvveb\Component\Notifications', 'results', __CLASS__, function ($results) {
 			// get number of unread messages
 			$message = model('Plugins\ContactForm\Message');
 			$status = $message->getStatusCount(['status' => 0]);
 			$unread = $status['count'] ?? 0;
 
+			$messages = [];
+			$messages['badge'] = $unread;
+
+			// if unread messages add notification with number of messages to the menu entry
+			if ($unread) {
+				//$menuEntry['badge'] = $unread;
+				$messages['badge-class'] = 'badge bg-success-subtle text-body mx-2';
+				$messages['icon'] = ($unread ? 'icon-mail-unread-outline' : 'icon-mail-outline');
+			}
+
+			$results['menu']['messages'] = $messages;
+
+			return [$results];
+		});
+
+		Event::on('Vvveb\Controller\Base', 'init-menu', __CLASS__, function ($menu) use ($admin_path) {
 			// add menu entry under plugins submenu
 			$menu['plugins']['items']['contact-form'] = [
 				'name'     => __('Contact form'),
@@ -70,16 +86,10 @@ class ContactFormPlugin {
 			$menuEntry = [
 				'name'     => __('Messages'),
 				'url'      => $admin_path . 'index.php?module=plugins/contact-form/messages',
-				'icon'     => $unread ? 'icon-mail-unread-outline' : 'icon-mail-outline',
+				'icon'     => 'icon-mail-outline',
 				'module'   => 'plugins/contact-form/messages',
 				'action'   => 'index',
 			];
-
-			// if unread messages add notification with number of messages to the menu entry
-			if ($unread) {
-				$menuEntry['badge'] = $unread;
-				$menuEntry['badge-class'] = 'badge bg-success-subtle text-body mx-2';
-			}
 
 			$menu = arrayInsertArrayAfter('users', $menu, ['messages' => $menuEntry]);
 
