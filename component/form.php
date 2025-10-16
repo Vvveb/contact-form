@@ -48,7 +48,10 @@ class Form extends ComponentBase {
 		'sendto'        => null,
 		'confirm-email' => null,
 		'name'          => '', //unique form identifier
+		'success'       => null, //optional success message
 	];
+
+	public $cacheExpire = 0;
 
 	function arrayToText($message, &$html, &$txt) {
 		$html .= '<table>';
@@ -74,21 +77,42 @@ class Form extends ComponentBase {
 			//if $post still has data, some filter above set by a spam plugin might remove the message
 			if ($post && ! $this->isSpam($post)) {
 				$view       = View::getInstance();
-				$formName   = $this->options['name'];
+				$name       = $this->options['name'];
+				$success    = $this->options['success'];
 				$post       = $this->removeSpamCatchFields($post);
 				$meta       = $request->server;
 				$metaFields = ['HTTP_USER_AGENT', 'REMOTE_ADDR', 'REQUEST_TIME', 'REQUEST_URI'];
 				$meta       = array_intersect_key($request->server, array_flip($metaFields));
 				$msg        = ['message' => ['data' => json_encode($post), 'meta' => json_encode($meta), 'type' => $formName]];
+				$formName   = $post['form-name'] ?? null; //data-v-type
+				$success    = $post['success'] ?? $success ?? null; //data-v-success
+
+				if ($formName && ($formName != $name)) {
+					return $results;
+				}
+
+				$formName = $formName ?? $name;
 
 				if ($this->options['save'] == true) {
 					$message    = new MessageSQL();
 
 					if ($message->add($msg)) {
 						CacheManager :: clearObjectCache('component', 'notifications');
-						$view->success[] = __('Message was sent!');
+						$success = $success ?? __('Message was sent!');
+
+						if ($formName) {
+							$view->success[$formName] = $success;
+						} else {
+							$view->success[] = $success;
+						}
 					} else {
-						$view->errors[] = __('Error sending message!');
+						$error = __('Error sending message!');
+
+						if ($formName) {
+							$view->errors[$formName] = $error;
+						} else {
+							$view->errors[] = $error;
+						}
 					}
 				}
 
