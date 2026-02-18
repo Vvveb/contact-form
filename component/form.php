@@ -75,77 +75,88 @@ class Form extends ComponentBase {
 			list($results, $post) = Event :: trigger(__CLASS__,__FUNCTION__, $results, $post);
 
 			//if $post still has data, some filter above set by a spam plugin might remove the message
-			if ($post && ! $this->isSpam($post)) {
+			if ($post) {
 				$view       = View::getInstance();
 				$name       = $this->options['name'];
-				$success    = $this->options['success'];
-				$post       = $this->removeSpamCatchFields($post);
-				$meta       = $request->server;
-				$metaFields = ['HTTP_USER_AGENT', 'REMOTE_ADDR', 'REQUEST_TIME', 'REQUEST_URI'];
-				$meta       = array_intersect_key($request->server, array_flip($metaFields));
-				$msg        = ['message' => ['data' => json_encode($post), 'meta' => json_encode($meta), 'type' => $formName]];
 				$formName   = $post['form-name'] ?? null; //data-v-type
-				$success    = $post['success'] ?? $success ?? null; //data-v-success
-
-				if ($formName && ($formName != $name)) {
-					return $results;
-				}
-
 				$formName = $formName ?? $name;
 
-				if ($this->options['save'] == true) {
-					$message    = new MessageSQL();
+				if (! $this->isSpam($post)) {
+					$post       = $this->removeSpamCatchFields($post);
+					$meta       = $request->server;
+					$metaFields = ['HTTP_USER_AGENT', 'REMOTE_ADDR', 'REQUEST_TIME', 'REQUEST_URI'];
+					$meta       = array_intersect_key($request->server, array_flip($metaFields));
+					$msg        = ['message' => ['data' => json_encode($post), 'meta' => json_encode($meta), 'type' => $formName]];
+					$success    = $post['success'] ?? $this->options['success'] ?? null; //data-v-success
 
-					if ($message->add($msg)) {
-						CacheManager :: clearObjectCache('component', 'notifications');
-						$success = $success ?? __('Message was sent!');
-
-						if ($formName) {
-							$view->success[$formName] = $success;
-						} else {
-							$view->success[] = $success;
-						}
-					} else {
-						$error = __('Error sending message!');
-
-						if ($formName) {
-							$view->errors[$formName] = $error;
-						} else {
-							$view->errors[] = $error;
-						}
+					if ($formName && ($formName != $name)) {
+						return $results;
 					}
-				}
 
-				$formName = humanReadable($formName);
-				$html     = "<h2>$formName</h2>";
-				$txt      =  "$formName\n\n";
 
-				list($html, $txt) = $this->arrayToText($post, $html, $txt);
+					if ($this->options['save'] == true) {
+						$message    = new MessageSQL();
 
-				$html .= '<h3>' . __('Meta') . '</h3>';
-				$txt .= __('Meta') . "\n\n";
+						if ($message->add($msg)) {
+							CacheManager :: clearObjectCache('component', 'notifications');
+							$success = $success ?? __('Message was sent!');
+							$results['success'] = $success;
 
-				list($html, $txt) = $this->arrayToText($meta, $html, $txt);
+							if ($formName) {
+								$view->success[$formName] = $success;
+							} else {
+								$view->success[] = $success;
+							}
+						} else {
+							$error = __('Error sending message!');
 
-				if ($this->options['email'] == true) {
-					$site    = siteSettings(SITE_ID, sess('language_id') ?? 1);
-					$subject = ($site['description']['title'] ?? '') . ' - ' . $formName . (isset($post['subject']) ? ' - ' . $post['subject'] : '');
-					$to      = $this->options['sendto'] ?? $site['contact-email'] ?? false;
-
-					if ($to) {
-						try {
-							$error =  __('Error sending mail!');
-
-							if (email($to, $subject, ['html'=> $html, 'txt' => $txt])) {
-								//$view->success[] = __('Email sent!');
+							if ($formName) {
+								$view->errors[$formName] = $error;
 							} else {
 								$view->errors[] = $error;
 							}
-						} catch (\Exception $e) {
-							$error .= "\n" . $e->getMessage();
-							$view->errors[] = $error;
 						}
 					}
+
+					$formName = humanReadable($formName);
+					$html     = "<h2>$formName</h2>";
+					$txt      =  "$formName\n\n";
+
+					list($html, $txt) = $this->arrayToText($post, $html, $txt);
+
+					$html .= '<h3>' . __('Meta') . '</h3>';
+					$txt .= __('Meta') . "\n\n";
+
+					list($html, $txt) = $this->arrayToText($meta, $html, $txt);
+
+					if ($this->options['email'] == true) {
+						$site    = siteSettings(SITE_ID, sess('language_id') ?? 1);
+						$subject = ($site['description']['title'] ?? '') . ' - ' . $formName . (isset($post['subject']) ? ' - ' . $post['subject'] : '');
+						$to      = $this->options['sendto'] ?? $site['contact-email'] ?? false;
+
+						if ($to) {
+							try {
+								$error =  __('Error sending mail!');
+
+								if (email($to, $subject, ['html'=> $html, 'txt' => $txt])) {
+									//$view->success[] = __('Email sent!');
+								} else {
+									$view->errors[] = $error;
+								}
+							} catch (\Exception $e) {
+								$error .= "\n" . $e->getMessage();
+								$view->errors[] = $error;
+							}
+						}
+					}
+				} else {
+					$error =  __('Sending message failed!');
+					if ($formName) {
+						$view->errors[$formName] = $error;
+					} else {
+						$view->errors[] = $error;
+					}
+					$view->errors[] = $error;
 				}
 			}
 		}

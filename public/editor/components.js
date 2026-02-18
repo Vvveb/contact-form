@@ -1,4 +1,5 @@
-Vvveb.ComponentsGroup['Plugins'] = ["contact-form/form"];
+Vvveb.ComponentsGroup['Plugins'] = Vvveb.ComponentsGroup['Plugins'] ?? [];
+Vvveb.ComponentsGroup['Plugins'].push("contact-form/form");
 
 Vvveb.Components.extend("_base", "contact-form/form", {
     image: "icons/envelope.svg",

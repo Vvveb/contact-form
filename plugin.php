@@ -77,7 +77,8 @@ class ContactFormPlugin {
 			$menu['plugins']['items']['contact-form'] = [
 				'name'     => __('Contact form'),
 				'url'      => $admin_path . 'index.php?module=plugins/contact-form/messages',
-				'icon-img' => PUBLIC_PATH . 'plugins/contact-form/contact-form.svg',
+				'icon'     => 'icon-mail-outline',
+				//'icon-img' => PUBLIC_PATH . 'plugins/contact-form/contact-form.svg',
 				'module'   => 'plugins/contact-form/messages',
 				'action'   => 'index',
 			];
@@ -97,10 +98,10 @@ class ContactFormPlugin {
 		});
 
 		// include plugin component when the page builder loads
-		Event::on('Vvveb\Controller\Editor\Editor', 'loadThemeAssets', __CLASS__, function ($inputs, $components, $blocks, $sections) {
-			$components['contact-form'] = '../../plugins/contact-form/editor/components.js';
+		Event::on('Vvveb\Controller\Editor\Editor', 'loadThemeAssets', __CLASS__, function ($assets) {
+			$assets['components']['contact-form'] = '../../plugins/contact-form/editor/components.js';
 
-			return [$inputs, $components, $blocks, $sections];
+			return [$assets];
 		});
 
 		// when plugin is installed first time run install and create tables if not created
