@@ -23,19 +23,41 @@
 namespace Vvveb\Plugins\ContactForm\Controller;
 
 use function Vvveb\__;
+
 use Vvveb\Controller\Crud;
+
 use function Vvveb\humanReadable;
 use function Vvveb\model;
+
+use Vvveb\Plugins\ContactForm\System\Message as MessageHelper;
 use Vvveb\System\CacheManager;
 
 class Message extends Crud {
-	protected $type = 'message';
+	protected string $type = 'message';
 
-	protected $modelName = 'Plugins\ContactForm\Message';
+	protected string $modelName = 'Plugins\ContactForm\Message';
 
-	protected $module = 'plugins/contact-form';
+	protected string $module = 'plugins/contact-form';
 
-	function index() {
+	/**
+	 * Move a message back to unread (status = 0).
+	 */
+	public function unread(): void {
+		$messageId = (int)($this->request->get['message_id'] ?? 0);
+
+		if ($messageId) {
+			model($this->modelName)->edit([
+				'message'    => ['status' => 0],
+				'message_id' => $messageId,
+			]);
+			CacheManager::clearObjectCache('component', 'notifications');
+			$this->view->success[] = __('Message marked as unread!');
+		}
+
+		$this->redirect(['module' => 'plugins/contact-form/messages']);
+	}
+
+	public function index(): void {
 		parent::index();
 
 		if ($this->view->message) {
@@ -50,12 +72,13 @@ class Message extends Crud {
 					if (in_array($key, ['csrf'])) {
 						continue;
 					}
-					$data[__(humanReadable($key))] = $value;
+					//multi-value fields arrive as arrays, flatten them for display
+					$data[__(humanReadable($key))] = MessageHelper::flattenValue($value);
 				}
 
 				foreach ($meta as $key => $value) {
 					unset($meta[$key]);
-					$meta[__(humanReadable(strtolower($key)))] = $value;
+					$meta[__(humanReadable(strtolower($key)))] = MessageHelper::flattenValue($value);
 				}
 
 				$message['message'] = $data;
@@ -64,7 +87,7 @@ class Message extends Crud {
 				if ($message['status'] == 0) {
 					$messageSql = model($this->modelName);
 					$messageSql->edit(['message' => ['status' => 1], 'message_id' => $message['message_id']]);
-					CacheManager :: clearObjectCache('component', 'notifications');
+					CacheManager::clearObjectCache('component', 'notifications');
 				}
 			}
 		} else {

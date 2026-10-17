@@ -23,40 +23,47 @@
 
   <div id="container">
 
-       <div class="sidebar" data-v-copy-from="index.html,.sidebar"></div>
+       <aside class="sidebar" data-v-copy-from="index.html,.sidebar"></aside>
 
 
-    <div class="main">
+    <main>
 
-       <div class="clearfix top-header" data-v-copy-from="index.html,.top-header">
-      </div>
+       <header class="clearfix top-header" data-v-copy-from="index.html,.top-header">
+      </header>
 
       <form id="settings-form" action="" method="post" class="settings" data-v-message>
         <input type="hidden" name="action" id="action" value="save">
         <input type="hidden" name="csrf" data-v-csrf>
 		
-        <div class="actions flex-column flex-md-row">
+        <header class="actions flex-column flex-md-row">
           <div class="title">
             <h4 class="text-muted my-3">
-              <i class="icon-people-outline" data-v-menu-item-icon=""></i>
+              <svg class="svg-icon" data-v-menu-item-icon="" aria-hidden="true"><use href="/admin/default/img/icons.svg#users"></use></svg>
               <span>Message</span>
             </h4>
           </div>
 
           <div class="btns">
             <a href="/admin/?module=plugins/contact-form/messages" title="Message list" class="btn btn-outline-secondary pe-3">
-              <i class="la la-arrow-left"></i>
+              <svg class="svg-icon" aria-hidden="true"><use href="/admin/default/img/icons.svg#arrow-left"></use></svg>
               <span>Message list</span>
             </a>
+            <a href="/admin/?module=plugins/contact-form/message" data-v-unread-url title="Mark as unread" class="btn btn-outline-secondary pe-3 ms-2">
+              <svg class="svg-icon" aria-hidden="true"><use href="/admin/default/img/icons.svg#mail"></use></svg>
+              <span>Mark as unread</span>
+            </a>
+            <button type="submit" class="btn btn-outline-danger ms-2" onclick="document.getElementById('action').value='delete';return confirm('Are you sure?')" data-v-check-permission-delete>
+              <svg class="svg-icon" aria-hidden="true"><use href="/admin/default/img/icons.svg#trash"></use></svg><span>Delete</span>
+            </button>
 <!--
             <button type="submit" href="" data-bs-toggle="tooltip" title="" class="btn btn-primary btn-icon ms-1">
-              <i class="icon-create-outline"></i> <span>Save</span>
+              <svg class="svg-icon" aria-hidden="true"><use href="/admin/default/img/icons.svg#pencil"></use></svg> <span>Save</span>
             </button>
 -->            
           </div>
-        </div>
+        </header>
 
-        <div id="main-content">
+        <section id="main-content">
 
         <div class="notifications" data-v-notifications data-v-copy-from="index.html,.notifications"></div>
 
@@ -88,8 +95,8 @@
 			</div>
 
             </div>
-          </div>
-        </div>
+          </section>
+        </main>
       </form>
 
     </div>
@@ -113,9 +120,9 @@
 
 
     <script>
-let mediaPath = '{ $this->mediaPath }';
-let mediaScanUrl =  '{ $this->scanUrl }';
-let uploadUrl = '{ $this->uploadUrl }';
+var mediaPath = '{$this->mediaPath}';
+var mediaScanUrl = '{$this->scanUrl}';
+var uploadUrl = '{$this->uploadUrl}';
 </script>
 
   

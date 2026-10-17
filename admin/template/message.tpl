@@ -1,5 +1,7 @@
 import(crud.tpl, {"type":"message"})
 
+[data-v-unread-url]|href = <?php echo $this->adminPath . 'index.php?module=plugins/contact-form/message&action=unread&message_id=' . (int)($this->message['message_id'] ?? 0); ?>
+
 [data-v-data]|deleteAllButFirstChild
 
 [data-v-data]|before = <?php 

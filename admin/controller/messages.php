@@ -19,25 +19,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
 */
-
 namespace Vvveb\Plugins\ContactForm\Controller;
+
+use function Vvveb\__;
 
 use Vvveb\Controller\Listing;
 
-class Messages extends Listing {
-	protected $type = 'message';
+use function Vvveb\humanReadable;
+use function Vvveb\model;
 
-	protected $modelName = 'Plugins\ContactForm\Message';
+class Messages extends Listing {
+	protected string $type = 'message';
+
+	protected string $modelName = 'Plugins\ContactForm\Message';
 
 	//protected $model = 'message';
 
-	protected $list = 'message';
+	protected string $list = 'message';
 
-	protected $listController = 'messages';
+	protected string $controller = 'message';
 
-	protected $module = 'plugins/contact-form';
+	protected string $listController = 'messages';
 
-	function index() {
+	protected string $module = 'plugins/contact-form';
+
+	public function index(): void {
 		parent::index();
 
 		//expand fields in the json
@@ -50,5 +56,61 @@ class Messages extends Listing {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Export messages as CSV, flattening the submitted form fields.
+	 */
+	public function csv(): void {
+		$list = model($this->modelName);
+		$rows = $list->getAll(['start' => 0, 'limit' => 100000] + $this->global)['message'] ?? [];
+
+		//collect every field submitted across all forms (capped to keep the
+		//columns manageable; fields beyond the cap only appear in json data)
+		$fields   = [];
+		$expanded = [];
+
+		foreach ($rows as $row) {
+			$data = json_decode($row['data'] ?? '{}', true) ?: [];
+			unset($data['csrf']);
+			$expanded[] = [$row, $data];
+
+			foreach (array_keys($data) as $key) {
+				if (!in_array($key, $fields) && count($fields) < 50) {
+					$fields[] = $key;
+				}
+			}
+		}
+
+		header('Content-Type: text/csv; charset=utf-8');
+		header('Content-Disposition: attachment; filename="contact-form-messages.csv"');
+
+		$fp = fopen('php://output', 'w');
+		//UTF-8 BOM so Excel renders accented characters correctly
+		fputs($fp, "\xEF\xBB\xBF");
+
+		fputcsv($fp, array_merge(
+			['Message ID', 'Type', 'Date', 'Status'],
+			array_map(fn ($f) => __(humanReadable($f)), $fields)
+		), ',', '"', '\\', "\n");
+
+		foreach ($expanded as [$row, $data]) {
+			$line = [
+				$row['message_id'] ?? '',
+				$row['type'] ?? '',
+				$row['created_at'] ?? '',
+				(empty($row['status']) ? 'Unread' : 'Read'),
+			];
+
+			foreach ($fields as $field) {
+				$value  = $data[$field] ?? '';
+				$line[] = is_array($value) ? json_encode($value) : $value;
+			}
+
+			fputcsv($fp, $line, ',', '"', '\\', "\n");
+		}
+
+		fclose($fp);
+		exit();
 	}
 }
