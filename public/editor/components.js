@@ -12,7 +12,7 @@ Vvveb.Components.extend("_base", "contact-form/form", {
 			<div class="alert alert-danger d-flex alert-dismissable" role="alert" data-v-if="this.errors">
 
 				<div class="icon align-middle me-2">
-					<i class="align-middle la la-2x lh-1 la-exclamation-triangle"></i>
+					<svg class="svg-icon align-middle la-2x lh-1" aria-hidden="true"><use href="/admin/default/img/icons.svg#alert-triangle"></use></svg>
 				</div>
 
 				<div class="flex-grow-1 align-self-center text-small" >
@@ -26,15 +26,15 @@ Vvveb.Components.extend("_base", "contact-form/form", {
 
 				<button type="button" class="btn-close align-middle" data-bs-dismiss="alert" aria-label="Close">
 					<span aria-hidden="true">
-						<!-- <i class="la la-times"></i> -->
+						<!-- <svg class="svg-icon" aria-hidden="true"><use href="/admin/default/img/icons.svg#x"></use></svg> -->
 					</span>
 				</button>
 			</div>
 
-			<div class="alert alert-success d-flex  alert-dismissable d-flex" role="alert" data-v-notification-success>
+			<div class="alert alert-success d-flex alert-dismissable" role="alert" data-v-notification-success>
 
 				<div class="icon align-middle me-2">
-					<i class="align-middle la la-2x lh-1 la-check-circle"></i>
+					<svg class="svg-icon align-middle la-2x lh-1" aria-hidden="true"><use href="/admin/default/img/icons.svg#circle-check"></use></svg>
 				</div>
 
 				<div class="flex-grow-1 align-self-center align-middle" data-v-notification-text>
@@ -43,7 +43,7 @@ Vvveb.Components.extend("_base", "contact-form/form", {
 
 				<button type="button" class="btn-close align-middle" data-bs-dismiss="alert" aria-label="Close">
 					<span aria-hidden="true">
-						<!-- <i class="la la-times"></i> -->
+						<!-- <svg class="svg-icon" aria-hidden="true"><use href="/admin/default/img/icons.svg#x"></use></svg> -->
 					</span>
 				</button>
 			</div>
@@ -91,7 +91,7 @@ Vvveb.Components.extend("_base", "contact-form/form", {
 
 	  <div class="row mt-4">
 		<div class="col">
-		  <button type="submit" class="btn btn-primary">Send message <i class="la la-long-arrow-alt-right ms-1"></i></button>
+		  <button type="submit" class="btn btn-primary">Send message <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ms-1"  aria-hidden="true"><path d="M5 12l14 0" /> <path d="M15 16l4 -4" /> <path d="M15 8l4 4" /></svg></button>
 		</div>
 	  </div>
 	</form>

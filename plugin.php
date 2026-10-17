@@ -36,35 +36,36 @@ Settings: /admin/index.php?module=plugins/contact-form/messages
 use function Vvveb\__;
 use function Vvveb\arrayInsertArrayAfter;
 use function Vvveb\model;
+
 use Vvveb\Plugins\ContactForm\Install;
 use Vvveb\System\Core\View;
 use Vvveb\System\Event;
 
-if (! defined('V_VERSION')) {
-	die('Invalid request!');
+if (!defined('V_VERSION')) {
+	exit('Invalid request!');
 }
 
 #[\AllowDynamicProperties]
 class ContactFormPlugin {
-	function admin() {
+	public function admin(): void {
 		// add admin menu item
 		$admin_path = \Vvveb\adminPath();
 
 		// add messages count to notifications
-		Event::on('Vvveb\Component\Notifications', 'results', __CLASS__, function ($results) {
+		Event::on('Vvveb\Component\Notifications', 'results', __CLASS__, function($results) {
 			// get number of unread messages
 			$message = model('Plugins\ContactForm\Message');
-			$status = $message->getStatusCount(['status' => 0]);
-			$unread = $status['count'] ?? 0;
+			$status  = $message->getStatusCount(['status' => 0]);
+			$unread  = $status['count'] ?? 0;
 
-			$messages = [];
+			$messages          = [];
 			$messages['badge'] = $unread;
 
 			// if unread messages add notification with number of messages to the menu entry
 			if ($unread) {
 				//$menuEntry['badge'] = $unread;
 				$messages['badge-class'] = 'badge bg-success-subtle text-body mx-2';
-				$messages['icon'] = ($unread ? 'icon-mail-unread-outline' : 'icon-mail-outline');
+				$messages['icon']        = ($unread ? 'mail-exclamation' : 'mail');
 			}
 
 			$results['menu']['messages'] = $messages;
@@ -72,24 +73,24 @@ class ContactFormPlugin {
 			return [$results];
 		});
 
-		Event::on('Vvveb\Controller\Base', 'init-menu', __CLASS__, function ($menu) use ($admin_path) {
+		Event::on('Vvveb\Controller\Base', 'init-menu', __CLASS__, function($menu) use ($admin_path) {
 			// add menu entry under plugins submenu
 			$menu['plugins']['items']['contact-form'] = [
-				'name'     => __('Contact form'),
-				'url'      => $admin_path . 'index.php?module=plugins/contact-form/messages',
-				'icon'     => 'icon-mail-outline',
+				'name' => __('Contact form'),
+				'url'  => $admin_path . 'index.php?module=plugins/contact-form/messages',
+				'icon' => 'mail',
 				//'icon-img' => PUBLIC_PATH . 'plugins/contact-form/contact-form.svg',
-				'module'   => 'plugins/contact-form/messages',
-				'action'   => 'index',
+				'module' => 'plugins/contact-form/messages',
+				'action' => 'index',
 			];
 
 			// add shortcut to messages page to top level menu
 			$menuEntry = [
-				'name'     => __('Messages'),
-				'url'      => $admin_path . 'index.php?module=plugins/contact-form/messages',
-				'icon'     => 'icon-mail-outline',
-				'module'   => 'plugins/contact-form/messages',
-				'action'   => 'index',
+				'name'   => __('Messages'),
+				'url'    => $admin_path . 'index.php?module=plugins/contact-form/messages',
+				'icon'   => 'mail',
+				'module' => 'plugins/contact-form/messages',
+				'action' => 'index',
 			];
 
 			$menu = arrayInsertArrayAfter('users', $menu, ['messages' => $menuEntry]);
@@ -98,14 +99,14 @@ class ContactFormPlugin {
 		});
 
 		// include plugin component when the page builder loads
-		Event::on('Vvveb\Controller\Editor\Editor', 'loadThemeAssets', __CLASS__, function ($assets) {
+		Event::on('Vvveb\Controller\Editor\Editor', 'loadThemeAssets', __CLASS__, function($assets) {
 			$assets['components']['contact-form'] = '../../plugins/contact-form/editor/components.js';
 
 			return [$assets];
 		});
 
 		// when plugin is installed first time run install and create tables if not created
-		Event::on('Vvveb\System\Extensions\Plugins', 'setup', __CLASS__, function ($pluginName, $siteId) {
+		Event::on('Vvveb\System\Extensions\Plugins', 'setup', __CLASS__, function($pluginName, $siteId) {
 			if ($pluginName == 'contact-form') {
 				$this->install();
 			}
@@ -114,25 +115,23 @@ class ContactFormPlugin {
 		});
 	}
 
-	function install() {
+	public function install(): void {
 		$install = new Install();
 		$install->run();
 	}
 
-	function app() {
+	public function app(): void {
 		// include code contact forms to preserve input values on form submit
 		$this->view = View::getInstance();
 		$template   = $this->view->getTemplateEngineInstance();
 		$template->loadTemplateFile(__DIR__ . '/app/template/contact-form.tpl');
 	}
 
-	function __construct() {
+	public function __construct() {
 		if (APP == 'admin') {
 			$this->admin();
-		} else {
-			if (APP == 'app') {
-				$this->app();
-			}
+		} elseif (APP == 'app') {
+			$this->app();
 		}
 	}
 }
