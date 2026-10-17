@@ -18,20 +18,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
-*/
+ */
 
 namespace Vvveb\Plugins\ContactForm;
 
-use function Vvveb\__;
 use Vvveb\System\Import\Sql;
 
-if (! defined('V_VERSION')) {
-	die('Invalid request!');
+if (!defined('V_VERSION')) {
+	exit('Invalid request!');
 }
 
 #[\AllowDynamicProperties]
 class Install {
-	function import() {
+	public function import(): void {
 		try {
 			$engine = DB_ENGINE;
 			$import = new Sql();
@@ -40,11 +39,11 @@ class Install {
 			$import->setPath(__DIR__ . '/install/sql/insert/');
 			$import->insertData();
 		} catch (\Exception $e) {
-			$this->view->errors[] = sprintf(__('Db error: "%s" Error code: "%s"'), $e->getMessage(), $e->getCode());
+			\Vvveb\logError($e->getMessage());
 		}
 	}
 
-	function run() {
+	public function run(): void {
 		$this->import();
 	}
 }

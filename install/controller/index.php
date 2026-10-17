@@ -17,24 +17,21 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
  */
 
 namespace Vvveb\Controller;
 
-use function Vvveb\__;
 use Vvveb\System\Import\Sql;
 
 #[\AllowDynamicProperties]
 class Index extends Base {
-	function __construct() {
-	}
+	public function __construct() {}
 
-	function import() {
+	public function import(): void {
 		try {
 			$engine = DB_ENGINE;
 			$import = new Sql();
-			$import->setPath(__DIR__ . "../install/sql/$engine/schema/");
+			$import->setPath(__DIR__ . "../install/sql/{$engine}/schema/");
 			$import->createTables();
 			$import->setPath(__DIR__ . '../install/sql/insert/');
 			$import->insertData();
@@ -43,7 +40,7 @@ class Index extends Base {
 		}
 	}
 
-	function index() {
+	public function index(): void {
 		$this->import();
 	}
 }
