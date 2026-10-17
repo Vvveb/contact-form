@@ -4,7 +4,7 @@
 
 	CREATE PROCEDURE get(
 		IN message_id INT,
-		OUT fetch_row, 
+		OUT fetch_row 
 	)
 	BEGIN
 		-- message
@@ -56,10 +56,7 @@
 	CREATE PROCEDURE getAll(
 
 		-- variables
-		IN  language_id INT,
-		IN  user_group_id INT,
-		IN  site_id INT,
-		IN  search CHAR,
+		IN  status INT,
 		
 		-- pagination
 		IN  start INT,
@@ -67,13 +64,19 @@
 			
 		-- return array of messages for messages query
 		OUT fetch_all,
-		-- return messages count for count query
-		OUT fetch_one,
+		OUT fetch_one
 	)
 	BEGIN
 
 		SELECT * 
 			FROM message 
+		WHERE 1 = 1
+
+		@IF isset(:status)
+		THEN
+			AND message.status = :status
+		END @IF
+
 		ORDER BY message_id DESC
 			
 		LIMIT :limit OFFSET :start;
@@ -104,7 +107,7 @@
 
 	CREATE PROCEDURE getStatusCount(
 		IN status INT,
-		OUT fetch_row, 
+		OUT fetch_row 
 	)
 	BEGIN
 		-- message
